@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
+st.set_page_config(layout="wide")
 
 # --- Config ---
 SMØRREBRØD = [
