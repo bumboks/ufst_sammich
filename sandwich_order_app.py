@@ -141,6 +141,19 @@ if st.session_state.reset_quantities:
 st.title("🥪 Smørrebrød & Sandwich Ordering System")
 st.markdown("Place your order below. All orders are visible to everyone!")
 
+# --- Price List ---
+price_left, _ = st.columns([2, 1])
+with price_left:
+    price_col1, price_col2 = st.columns([1, 1])
+    with price_col1:
+        st.subheader("💰 Smørrebrød Prices")
+        st.markdown(f"- Medium: DKK {PRICES_SMØRREBRØD['medium']}\n- Large: DKK {PRICES_SMØRREBRØD['large']}\n- Luksus: DKK {PRICES_SMØRREBRØD['luksus']}")
+    with price_col2:
+        st.subheader("💰 Sandwich Prices")
+        st.markdown(
+            f"- Base: DKK {PRICE_SANDWICH_BASE}\n- avocado: +DKK {EXTRA_AVOCADO_PRICE}\n- bacon: +DKK {EXTRA_BACON_PRICE}"
+        )
+
 # --- Two-Column Layout (Left: 2/3, Right: 1/3) ---
 left_col, right_col = st.columns([2, 1])
 
@@ -151,7 +164,7 @@ with left_col:
         name = st.text_input("Your Name *", placeholder="e.g., Alexander Hamilton")
 
         # --- Collapsible Smørrebrød Section ---
-        with st.expander("🍽️ Smørrebrød", expanded=True):
+        with st.expander("🍽️ Smørrebrød", expanded=False):
             order_items = []
             for smørrebrød in SMØRREBRØD:
                 cols = st.columns([3, 2, 1, 1])
@@ -188,7 +201,7 @@ with left_col:
                     })
 
         # --- Collapsible Sandwiches Section ---
-        with st.expander("🥪 Sandwiches", expanded=True):
+        with st.expander("🥪 Sandwiches", expanded=False):
             for sandwich in SANDWICHES:
                 cols = st.columns([3, 2, 1, 1])
                 with cols[0]:
@@ -267,17 +280,6 @@ with left_col:
 
 # --- RIGHT COLUMN: Orders List + Reset ---
 with right_col:
-    # --- Price List ---
-    st.subheader("💰 Price List")
-    st.markdown("**Smørrebrød:**")
-    for size, price in PRICES_SMØRREBRØD.items():
-        st.write(f"- {size.capitalize()}: DKK {price}")
-    st.markdown("**Sandwiches:**")
-    st.write(f"- Base: DKK {PRICE_SANDWICH_BASE}")
-    st.write(f"- avocado: +DKK {EXTRA_AVOCADO_PRICE}")
-    st.write(f"- bacon: +DKK {EXTRA_BACON_PRICE}")
-    st.divider()
-
     st.subheader("📋 Current Orders")
     orders = load_orders()
 
