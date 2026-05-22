@@ -69,9 +69,9 @@ def load_orders():
                         extra = item.get("extra", "")
                         qty = item.get("qty", 0)
                         extra_price = 0
-                        if "ekstra avocado" in extra:
+                        if "avocado" in extra.lower():
                             extra_price += EXTRA_AVOCADO_PRICE
-                        if "ekstra bacon" in extra:
+                        if "bacon" in extra.lower():
                             extra_price += EXTRA_BACON_PRICE
                         total += qty * (PRICE_SANDWICH_BASE + extra_price)
                     else:
@@ -89,9 +89,9 @@ def load_orders():
                     elif "extra" in item:
                         extra = item.get("extra", "")
                         extra_price = 0
-                        if "ekstra avocado" in extra:
+                        if "avocado" in extra.lower():
                             extra_price += EXTRA_AVOCADO_PRICE
-                        if "ekstra bacon" in extra:
+                        if "bacon" in extra.lower():
                             extra_price += EXTRA_BACON_PRICE
                         item["price_per_unit"] = PRICE_SANDWICH_BASE + extra_price
                         if "type" not in item:
@@ -195,11 +195,11 @@ with left_col:
                     st.write(f"- {sandwich}")
                 with cols[1]:
                     ekstra_avocado = st.checkbox(
-                        "ekstra avocado",
+                        "avocado",
                         key=f"extra_avocado_{sandwich}"
                     )
                     ekstra_bacon = st.checkbox(
-                        "ekstra bacon",
+                        "bacon",
                         key=f"extra_bacon_{sandwich}"
                     )
                 with cols[2]:
@@ -223,9 +223,9 @@ with left_col:
                 if qty > 0:
                     selected_extras = []
                     if ekstra_avocado:
-                        selected_extras.append("ekstra avocado")
+                        selected_extras.append("avocado")
                     if ekstra_bacon:
-                        selected_extras.append("ekstra bacon")
+                        selected_extras.append("bacon")
                     extras_str = ", ".join(selected_extras) if selected_extras else "Ingen ekstra"
 
                     order_items.append({
@@ -271,8 +271,8 @@ with right_col:
         st.write(f"- {size.capitalize()}: DKK {price}")
     st.markdown("**Sandwiches:**")
     st.write(f"- Base: DKK {PRICE_SANDWICH_BASE}")
-    st.write(f"- ekstra avocado: +DKK {EXTRA_AVOCADO_PRICE}")
-    st.write(f"- ekstra bacon: +DKK {EXTRA_BACON_PRICE}")
+    st.write(f"- avocado: +DKK {EXTRA_AVOCADO_PRICE}")
+    st.write(f"- bacon: +DKK {EXTRA_BACON_PRICE}")
     st.divider()
 
     st.subheader("📋 Current Orders")
