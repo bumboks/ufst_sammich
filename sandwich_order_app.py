@@ -5,7 +5,6 @@ from pathlib import Path
 from collections import defaultdict
 st.set_page_config(layout="wide")
 
-# --- Config ---
 SMØRREBRØD = [
     "Fiskefilet med remoulade",
     "Fiskefilet med mayonaise & rejer",
@@ -51,6 +50,26 @@ PRICE_SANDWICH_BASE = 85
 EXTRA_AVOCADO_PRICE = 15
 EXTRA_BACON_PRICE = 15
 ORDERS_FILE = Path("orders.json")
+PASSWORD = st.secrets.get("password")
+
+# --- Authentication ---
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Login Required")
+    st.write("Enter the password to view the ordering page.")
+
+    password_input = st.text_input("Password", type="password")
+    if st.button("Unlock"):
+        if not PASSWORD:
+            st.error("No password is configured. Please add `password` to secrets.toml.")
+        elif password_input == PASSWORD:
+            st.session_state.authenticated = True
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
+    st.stop()
 
 # --- Helper Functions ---
 def load_orders():
@@ -296,7 +315,6 @@ with right_col:
             for variant, qty in variants.items():
                 if qty > 0:
                     if item_name in SANDWICHES:
-                        # Sandwich format: "1 Chilimarineret kylling... med ekstra avocado and ekstra bacon"
                         if variant == "Ingen ekstra":
                             st.write(f"{qty} {item_name}")
                         else:
@@ -304,7 +322,6 @@ with right_col:
                             extras_str = " og ".join(extras)
                             st.write(f"{qty} {item_name} med {extras_str}")
                     else:
-                        # Smørrebrød format: "2 (luksus) Fiskefilet med remoulade"
                         st.write(f"{qty} ({variant}) {item_name}")
 
         st.divider()
