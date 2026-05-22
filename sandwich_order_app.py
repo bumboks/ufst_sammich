@@ -148,7 +148,7 @@ left_col, right_col = st.columns([2, 1])
 with left_col:
     with st.form("order_form"):
         st.subheader("Place Your Order")
-        name = st.text_input("Your Name *", placeholder="e.g., Mads Hjort Larsen")
+        name = st.text_input("Your Name *", placeholder="e.g., Alexander Hamilton")
 
         # --- Collapsible Smørrebrød Section ---
         with st.expander("🍽️ Smørrebrød", expanded=True):
