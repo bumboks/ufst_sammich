@@ -66,7 +66,6 @@ if not st.session_state.authenticated:
             st.error("No password is configured. Please add `password` to secrets.toml.")
         elif password_input == PASSWORD:
             st.session_state.authenticated = True
-            st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
     st.stop()
