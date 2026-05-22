@@ -269,7 +269,7 @@ with left_col:
 with right_col:
     # --- Price List ---
     st.subheader("💰 Price List")
-    st.markdown("**Smørrebrød Sizes:**")
+    st.markdown("**Smørrebrød:**")
     for size, price in PRICES_SMØRREBRØD.items():
         st.write(f"- {size.capitalize()}: DKK {price}")
     st.markdown("**Sandwiches:**")
