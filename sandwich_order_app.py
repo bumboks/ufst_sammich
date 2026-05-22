@@ -194,14 +194,17 @@ with left_col:
                 with cols[0]:
                     st.write(f"- {sandwich}")
                 with cols[1]:
-                    ekstra_avocado = st.checkbox(
-                        "avocado",
-                        key=f"extra_avocado_{sandwich}"
-                    )
-                    ekstra_bacon = st.checkbox(
-                        "bacon",
-                        key=f"extra_bacon_{sandwich}"
-                    )
+                    checkbox_cols = st.columns([1, 1])
+                    with checkbox_cols[0]:
+                        ekstra_avocado = st.checkbox(
+                            "avocado",
+                            key=f"extra_avocado_{sandwich}"
+                        )
+                    with checkbox_cols[1]:
+                        ekstra_bacon = st.checkbox(
+                            "bacon",
+                            key=f"extra_bacon_{sandwich}"
+                        )
                 with cols[2]:
                     qty = st.number_input(
                         "Qty",
