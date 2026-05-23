@@ -300,7 +300,7 @@ with left_col:
 
 # --- RIGHT COLUMN: Orders List + Reset ---
 with right_col:
-    st.subheader("📋 Current Orders")
+    #st.subheader("📋 Current Orders")
     orders = load_orders()
 
     if not orders:
@@ -310,7 +310,7 @@ with right_col:
         st.metric("💰 Grand Total (All Orders)", f"DKK {grand_total}")
 
         # --- Combined Order Summary ---
-        st.subheader("📞 Combined order")
+        st.subheader("🗒️ Combined order")
         combined = get_combined_order(orders)
         for item_name, variants in combined.items():
             for variant, qty in variants.items():
