@@ -138,7 +138,7 @@ def get_combined_order(orders):
                 variant = item.get("size", "medium")
                 combined[name][variant] += item.get("qty", 0)
             else:
-                variant = item.get("extra", "Ingen ekstra")
+                variant = item.get("extra", "Intet ekstra")
                 combined[name][variant] += item.get("qty", 0)
     return combined
 
@@ -262,7 +262,7 @@ with left_col:
                         selected_extras.append("avocado")
                     if ekstra_bacon:
                         selected_extras.append("bacon")
-                    extras_str = ", ".join(selected_extras) if selected_extras else "Ingen ekstra"
+                    extras_str = ", ".join(selected_extras) if selected_extras else "Intet ekstra"
 
                     order_items.append({
                         "type": "sandwich",
@@ -316,7 +316,7 @@ with right_col:
             for variant, qty in variants.items():
                 if qty > 0:
                     if item_name in SANDWICHES:
-                        if variant == "Ingen ekstra":
+                        if variant == "Intet ekstra":
                             st.write(f"{qty} {item_name}")
                         else:
                             extras = variant.split(", ")
@@ -330,6 +330,7 @@ with right_col:
         # --- Individual Orders ---
         st.subheader("📄 Order Details")
         for i, order in enumerate(reversed(orders), 1):
+            original_index = len(orders) - i
             with st.expander(
                 f"Order #{len(orders) - i + 1} - {order['name']} | "
                 f"DKK {order.get('total', 0)} | {order['timestamp'][:19]}"
@@ -342,9 +343,18 @@ with right_col:
                         subtotal = item["qty"] * item["price_per_unit"]
                         st.write(f"- **{name}** ({size}) x{item['qty']} = DKK {subtotal}")
                     else:
-                        extra = item.get("extra", "Ingen ekstra")
+                        extra = item.get("extra", "Intet ekstra")
                         subtotal = item["qty"] * item["price_per_unit"]
                         st.write(f"- **{name}** ({extra}) x{item['qty']} = DKK {subtotal}")
+                
+                st.divider()
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    if st.button("🗑️ Delete Order", key=f"delete_order_{original_index}"):
+                        orders.pop(original_index)
+                        save_orders(orders)
+                        st.success("Order deleted!")
+                        st.rerun()
 
     st.divider()
     st.subheader("🗑️ Reset Orders (After Delivery)")
