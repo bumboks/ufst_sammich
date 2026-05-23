@@ -172,7 +172,7 @@ with price_left:
             f"- Base: {PRICE_SANDWICH_BASE} DKK\n- avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- bacon: +{EXTRA_BACON_PRICE} DKK"
         )
 with price_right:
-    st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Mon-Fri 09.00-14.00\n ### 🏠[mitlillekoekken.dk](https://mitlillekoekken.dk)")
+    st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Mon-Fri 09.00-14.00\n ### 🏠 [mitlillekoekken.dk](https://mitlillekoekken.dk)")
 
 # --- Two-Column Layout (Left: 2/3, Right: 1/3) ---
 left_col, right_col = st.columns([2, 1])
