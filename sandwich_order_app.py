@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
+from zoneinfo import ZoneInfo
 st.set_page_config(layout="wide")
 
 SMØRREBRØD = [
@@ -126,6 +127,23 @@ def load_orders():
 def save_orders(orders):
     with open(ORDERS_FILE, "w") as f:
         json.dump(orders, f, indent=2)
+
+
+def get_denmark_timestamp():
+    return datetime.now(ZoneInfo("Europe/Copenhagen")).isoformat(timespec="seconds")
+
+
+def format_timestamp(timestamp):
+    try:
+        dt = datetime.fromisoformat(timestamp)
+    except ValueError:
+        return timestamp
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
+
+    return dt.astimezone(ZoneInfo("Europe/Copenhagen")).strftime("%Y-%m-%d %H:%M:%S %Z")
+
 
 def get_combined_order(orders):
     """Aggregate all orders into a combined order summary."""
@@ -289,7 +307,7 @@ with left_col:
                     "name": name,
                     "items": order_items,
                     "total": order_total,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": get_denmark_timestamp(),
                 }
                 orders = load_orders()
                 orders.append(new_order)
@@ -333,7 +351,7 @@ with right_col:
             original_index = len(orders) - i
             with st.expander(
                 f"Order #{len(orders) - i + 1} - {order['name']} | "
-                f"DKK {order.get('total', 0)} | {order['timestamp'][:19]}"
+                f"DKK {order.get('total', 0)} | {format_timestamp(order.get('timestamp', ''))}"
             ):
                 for item in order.get("items", []):
                     item_type = item.get("type", "smørrebrød")
