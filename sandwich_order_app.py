@@ -169,7 +169,7 @@ with price_left:
     with price_col2:
         st.subheader("💰 Sandwich Prices")
         st.markdown(
-            f"- Base: DKK {PRICE_SANDWICH_BASE}\n- avocado: +DKK {EXTRA_AVOCADO_PRICE}\n- bacon: +DKK {EXTRA_BACON_PRICE}"
+            f"- Base: {PRICE_SANDWICH_BASE} DKK\n- avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- bacon: +{EXTRA_BACON_PRICE} DKK"
         )
 
 # --- Two-Column Layout (Left: 2/3, Right: 1/3) ---
