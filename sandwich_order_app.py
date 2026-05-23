@@ -165,7 +165,7 @@ with price_left:
     price_col1, price_col2 = st.columns([1, 1])
     with price_col1:
         st.subheader("💰 Smørrebrød Prices")
-        st.markdown(f"- Medium: DKK {PRICES_SMØRREBRØD['medium']}\n- Large: DKK {PRICES_SMØRREBRØD['large']}\n- Luksus: DKK {PRICES_SMØRREBRØD['luksus']}")
+        st.markdown(f"- Medium: {PRICES_SMØRREBRØD['medium']} DKK\n- Large: {PRICES_SMØRREBRØD['large']} DKK\n- Luksus: {PRICES_SMØRREBRØD['luksus']} DKK")
     with price_col2:
         st.subheader("💰 Sandwich Prices")
         st.markdown(
