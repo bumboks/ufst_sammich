@@ -308,7 +308,7 @@ with right_col:
         st.metric("💰 Grand Total (All Orders)", f"DKK {grand_total}")
 
         # --- Combined Order Summary ---
-        st.subheader("📞 Combined Order (For Phone Orders)")
+        st.subheader("📞 Call +45 28 44 17 40 to order (Mon-Fri 09.00-14.00)")
         combined = get_combined_order(orders)
         for item_name, variants in combined.items():
             for variant, qty in variants.items():
