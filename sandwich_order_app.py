@@ -158,6 +158,8 @@ if st.session_state.reset_quantities:
 # --- App Title ---
 st.title("🥪 Smørrebrød & Sandwich Ordering System")
 st.markdown("Place your order below. All orders are visible to everyone!")
+st.markdown("**Call +45 28 44 17 40 to order**  
+**Open Mon-Fri 09.00-14.00**")
 
 # --- Price List ---
 price_left, _ = st.columns([2, 1])
@@ -308,7 +310,7 @@ with right_col:
         st.metric("💰 Grand Total (All Orders)", f"DKK {grand_total}")
 
         # --- Combined Order Summary ---
-        st.subheader("📞 Call +45 28 44 17 40 to order (Mon-Fri 09.00-14.00)")
+        st.subheader("📞 Combined order")
         combined = get_combined_order(orders)
         for item_name, variants in combined.items():
             for variant, qty in variants.items():
