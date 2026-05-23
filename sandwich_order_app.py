@@ -158,10 +158,9 @@ if st.session_state.reset_quantities:
 # --- App Title ---
 st.title("🥪 Smørrebrød & Sandwich Ordering System")
 st.markdown("Place your order below. All orders are visible to everyone!")
-st.markdown("**Call +45 28 44 17 40 to order**  **Open Mon-Fri 09.00-14.00**")
 
 # --- Price List ---
-price_left, _ = st.columns([2, 1])
+price_left, price_right = st.columns([2, 1])
 with price_left:
     price_col1, price_col2 = st.columns([1, 1])
     with price_col1:
@@ -172,6 +171,8 @@ with price_left:
         st.markdown(
             f"- Base: {PRICE_SANDWICH_BASE} DKK\n- avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- bacon: +{EXTRA_BACON_PRICE} DKK"
         )
+with price_right:
+    st.markdown("**Call +45 28 44 17 40 to order**  \n**Open Mon-Fri 09.00-14.00**")
 
 # --- Two-Column Layout (Left: 2/3, Right: 1/3) ---
 left_col, right_col = st.columns([2, 1])
