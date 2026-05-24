@@ -4,7 +4,11 @@ from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
 from zoneinfo import ZoneInfo
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title="AI SLOP BY MADS",
+    page_icon="🎯"
+)
 
 SMØRREBRØD = [
     "Fiskefilet med remoulade",
