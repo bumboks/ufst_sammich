@@ -187,7 +187,7 @@ with price_left:
     with price_col2:
         st.subheader("💰 Sandwich Prices")
         st.markdown(
-            f"- Base: {PRICE_SANDWICH_BASE} DKK\n- avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- bacon: +{EXTRA_BACON_PRICE} DKK"
+            f"- Base: {PRICE_SANDWICH_BASE} DKK\n- Extra avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- Extra bacon: +{EXTRA_BACON_PRICE} DKK"
         )
 with price_right:
     st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Mon-Fri 09.00-14.00\n ### 🏠 [mitlillekoekken.dk](https://mitlillekoekken.dk)")
@@ -339,7 +339,7 @@ with right_col:
                         else:
                             extras = variant.split(", ")
                             extras_str = " og ".join(extras)
-                            st.write(f"{qty} {item_name} med {extras_str}")
+                            st.write(f"{qty} {item_name} med ekstra {extras_str}")
                     else:
                         st.write(f"{qty} ({variant}) {item_name}")
 
