@@ -46,7 +46,7 @@ SANDWICHES = [
     "Æg & rejer",
     "Æg & bacon",
     "Æg & tunsalat",
-    "Tunsalat m. emmentaler, avokado & rød pesto",
+    "Tunsalat m. emmentaler, avocado & rød pesto",
     "Røget laks m. cremet friskost & purløg"
 ]
 SIZES = ["medium", "large", "luksus"]
@@ -191,7 +191,7 @@ with price_left:
     with price_col2:
         st.subheader("💰 Sandwich Prices")
         st.markdown(
-            f"- Base: {PRICE_SANDWICH_BASE} DKK\n- Extra avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- Extra bacon: +{EXTRA_BACON_PRICE} DKK"
+            f"- Normal: {PRICE_SANDWICH_BASE} DKK\n- Ekstra avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- Ekstra bacon: +{EXTRA_BACON_PRICE} DKK"
         )
 with price_right:
     st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Mon-Fri 09.00-14.00\n ### 🏠 [mitlillekoekken.dk](https://mitlillekoekken.dk)")
