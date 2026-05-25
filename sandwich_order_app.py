@@ -178,7 +178,7 @@ if st.session_state.reset_quantities:
     st.session_state.reset_quantities = False
 
 # --- App Title ---
-st.title("🥪 (B.A.S.S.) Bestilling Af Smørrebørd og Sandwiches")
+st.title("B.A.S.S. 🥪 (Bestilling Af Smørrebørd og Sandwiches)")
 st.markdown("Indtast din bestilling herunder. Alle bestillinger er synlige for alle!")
 
 # --- Price List ---
