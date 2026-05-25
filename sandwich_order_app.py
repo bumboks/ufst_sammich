@@ -329,7 +329,7 @@ with right_col:
         st.info("Ingen bestillinger endnu. Vær den første!")
     else:
         grand_total = sum(order.get("total", 0) for order in orders)
-        st.metric("💰 Grand Total (All Orders)", f"DKK {grand_total}")
+        st.metric("💰 Pris i alt (for alle bestillinger)", f"DKK {grand_total}")
 
         # --- Combined Order Summary ---
         st.subheader("🗒️ Combined order")
@@ -350,11 +350,11 @@ with right_col:
         st.divider()
 
         # --- Individual Orders ---
-        st.subheader("📄 Order Details")
+        st.subheader("📄 Bestillings detaljer")
         for i, order in enumerate(reversed(orders), 1):
             original_index = len(orders) - i
             with st.expander(
-                f"Order #{len(orders) - i + 1} - {order['name']} | "
+                f"Bestilling #{len(orders) - i + 1} - {order['name']} | "
                 f"DKK {order.get('total', 0)} | {format_timestamp(order.get('timestamp', ''))}"
             ):
                 for item in order.get("items", []):
