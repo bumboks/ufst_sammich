@@ -203,7 +203,6 @@ left_col, right_col = st.columns([2, 1])
 with left_col:
     with st.form("order_form"):
         st.subheader("Menukort")
-        name = st.text_input("Dit navn *", placeholder="f.eks., Allan Jakobsen")
 
         # --- Collapsible Smørrebrød Section ---
         with st.expander("🍽️ Smørrebrød", expanded=False):
@@ -296,7 +295,11 @@ with left_col:
                             (EXTRA_BACON_PRICE if ekstra_bacon else 0)
                     })
 
-        submitted = st.form_submit_button("Send bestilling")
+        name_input_col, submit_col = st.columns([4, 1])
+        with name_input_col:
+            name = st.text_input("", placeholder="Indtast dit navn f.eks. Allan Jakobsen", label_visibility="collapsed")
+        with submit_col:
+            submitted = st.form_submit_button("Send bestilling")
 
         if submitted:
             if not name:
