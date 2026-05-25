@@ -332,7 +332,7 @@ with right_col:
         st.metric("💰 Pris i alt (for alle bestillinger)", f"DKK {grand_total}")
 
         # --- Combined Order Summary ---
-        st.subheader("🗒️ Combined order")
+        st.subheader("🗒️ Kombineret bestilling")
         combined = get_combined_order(orders)
         for item_name, variants in combined.items():
             for variant, qty in variants.items():
@@ -350,7 +350,7 @@ with right_col:
         st.divider()
 
         # --- Individual Orders ---
-        st.subheader("📄 Bestillings detaljer")
+        st.subheader("📄 Individuelle bestillinger")
         for i, order in enumerate(reversed(orders), 1):
             original_index = len(orders) - i
             with st.expander(
