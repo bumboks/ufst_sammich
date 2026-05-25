@@ -6,8 +6,8 @@ from collections import defaultdict
 from zoneinfo import ZoneInfo
 st.set_page_config(
     layout="wide",
-    page_title="B.A.S.S.",
-    page_icon="🎸"
+    page_title="AI SLOP BY MADS",
+    page_icon="🤡"
 )
 
 SMØRREBRØD = [
@@ -178,7 +178,7 @@ if st.session_state.reset_quantities:
     st.session_state.reset_quantities = False
 
 # --- App Title ---
-st.title("🥪 Bestilling Af Smørrebørd og Sandwiches")
+st.title("🥪 (B.A.S.S.) Bestilling Af Smørrebørd og Sandwiches")
 st.markdown("Indtast din bestilling herunder. Alle bestillinger er synlige for alle!")
 
 # --- Price List ---
