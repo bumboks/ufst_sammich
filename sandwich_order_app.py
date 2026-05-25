@@ -178,23 +178,23 @@ if st.session_state.reset_quantities:
     st.session_state.reset_quantities = False
 
 # --- App Title ---
-st.title("🥪 Smørrebrød & Sandwich Ordering System")
-st.markdown("Place your order below. All orders are visible to everyone!")
+st.title("🥪 Smørrebrød og Sandwich Ordering System")
+st.markdown("Indtast din bestilling herunder. Alle bestillinger er synlige for alle!")
 
 # --- Price List ---
 price_left, price_right = st.columns([2, 1])
 with price_left:
     price_col1, price_col2 = st.columns([1, 1])
     with price_col1:
-        st.subheader("💰 Smørrebrød priser")
+        st.subheader("💰 Smørrebrød priser:")
         st.markdown(f"- Medium: {PRICES_SMØRREBRØD['medium']} DKK\n- Large: {PRICES_SMØRREBRØD['large']} DKK\n- Luksus: {PRICES_SMØRREBRØD['luksus']} DKK")
     with price_col2:
-        st.subheader("💰 Sandwich priser")
+        st.subheader("💰 Sandwich priser:")
         st.markdown(
             f"- Normal: {PRICE_SANDWICH_BASE} DKK\n- Ekstra avocado: +{EXTRA_AVOCADO_PRICE} DKK\n- Ekstra bacon: +{EXTRA_BACON_PRICE} DKK"
         )
 with price_right:
-    st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Mon-Fri 09.00-14.00\n ### 🏠 [mitlillekoekken.dk](https://mitlillekoekken.dk)")
+    st.markdown("### 📞 +45 28 44 17 40\n### 🕒 Man-Fre 09.00-14.00\n ### 🏠 [mitlillekoekken.dk](https://mitlillekoekken.dk)")
 
 # --- Two-Column Layout (Left: 2/3, Right: 1/3) ---
 left_col, right_col = st.columns([2, 1])
@@ -202,8 +202,8 @@ left_col, right_col = st.columns([2, 1])
 # --- LEFT COLUMN: Order Form ---
 with left_col:
     with st.form("order_form"):
-        st.subheader("Place Your Order")
-        name = st.text_input("Your Name *", placeholder="e.g., Alexander Hamilton")
+        st.subheader("Menukort")
+        name = st.text_input("Dit navn *", placeholder="f.eks., Allan Jakobsen")
 
         # --- Collapsible Smørrebrød Section ---
         with st.expander("🍽️ Smørrebrød", expanded=False):
@@ -296,13 +296,13 @@ with left_col:
                             (EXTRA_BACON_PRICE if ekstra_bacon else 0)
                     })
 
-        submitted = st.form_submit_button("Submit Order")
+        submitted = st.form_submit_button("Send bestilling")
 
         if submitted:
             if not name:
-                st.error("Please enter your name!")
+                st.error("Indtast venligst dit navn!")
             elif not order_items:
-                st.error("Please order at least one item!")
+                st.error("Bestil mindst en ting!")
             else:
                 order_total = sum(
                     item["qty"] * item["price_per_unit"] for item in order_items
@@ -326,7 +326,7 @@ with right_col:
     orders = load_orders()
 
     if not orders:
-        st.info("No orders yet. Be the first!")
+        st.info("Ingen bestillinger endnu. Vær den første!")
     else:
         grand_total = sum(order.get("total", 0) for order in orders)
         st.metric("💰 Grand Total (All Orders)", f"DKK {grand_total}")
@@ -372,16 +372,16 @@ with right_col:
                 st.divider()
                 col1, col2 = st.columns([1, 1])
                 with col1:
-                    if st.button("🗑️ Delete Order", key=f"delete_order_{original_index}"):
+                    if st.button("🗑️ Slet bestilling", key=f"delete_order_{original_index}"):
                         orders.pop(original_index)
                         save_orders(orders)
-                        st.success("Order deleted!")
+                        st.success("Bestilling slettet!")
                         st.rerun()
 
     st.divider()
-    st.subheader("🗑️ Reset Orders (After Delivery)")
-    reset_confirmed = st.checkbox("✅ I confirm all orders have been delivered and I want to reset the list.")
-    if st.button("Reset All Orders", disabled=not reset_confirmed, type="primary"):
+    st.subheader("🗑️ Nulstil bestillinger (Efter levering)")
+    reset_confirmed = st.checkbox("✅ Jeg bekræfter, at alle bestillinger er blevet leveret, og jeg vil nulstille listen.")
+    if st.button("Nulstil alle bestillinger", disabled=not reset_confirmed, type="primary"):
         save_orders([])
-        st.success("All orders have been cleared! 🎉")
+        st.success("Alle bestillinger er blevet slettet! 🎉")
         st.rerun()
