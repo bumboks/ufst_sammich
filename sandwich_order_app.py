@@ -406,22 +406,24 @@ with right_col:
     # --- File Handling Section ---
     st.divider()
     st.subheader("📥 Filhåndtering")
-
-    combined_text = format_combined_order_as_text(get_combined_order(orders))
-    st.download_button(
-        label="📥 Download orders.txt",
-        data=combined_text,
-        file_name="orders.txt",
-        mime="text/plain"
-    )
-
-    orders_json = json.dumps(orders, indent=2)
-    st.download_button(
-        label="📥 Download orders.json",
-        data=orders_json,
-        file_name="orders.json",
-        mime="application/json"
-    )
+    col1, col2 = st.columns(2)
+    with col1:
+        combined_text = format_combined_order_as_text(get_combined_order(orders))
+        st.download_button(
+            label="📥 orders.txt",
+            data=combined_text,
+            file_name="orders.txt",
+            mime="text/plain"
+        )
+    
+    with col2:
+        orders_json = json.dumps(orders, indent=2)
+        st.download_button(
+            label="📥 orders.json",
+            data=orders_json,
+            file_name="orders.json",
+            mime="application/json"
+        )
 
     uploaded_file = st.file_uploader("Upload orders.json", type=["json"])
     if uploaded_file is not None:
