@@ -425,7 +425,7 @@ with right_col:
             mime="application/json"
         )
 
-    uploaded_file = st.file_uploader("Upload orders.json (will overwrite current orders)", type=["json"])
+    uploaded_file = st.file_uploader("Upload orders.json (overskriver nuværende bestillinger)", type=["json"])
     if uploaded_file is not None:
         try:
             new_orders = json.loads(uploaded_file.getvalue().decode("utf-8"))
