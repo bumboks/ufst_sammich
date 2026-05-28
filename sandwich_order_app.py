@@ -162,6 +162,28 @@ def get_combined_order(orders):
                 combined[name][variant] += item.get("qty", 0)
     return combined
 
+def format_combined_order_as_text(combined):
+    """Format the combined order as plain text for download."""
+    lines = []
+    lines.append("=== Kombineret Bestilling ===\n")
+
+    for item_name in sorted(combined.keys()):
+        for variant in sorted(combined[item_name].keys()):
+            qty = combined[item_name][variant]
+            if qty > 0:
+                if item_name in SANDWICHES:
+                    if variant == "Intet ekstra":
+                        lines.append(f"{qty}x {item_name}")
+                    else:
+                        extras = variant.split(", ")
+                        extras_str = " og ".join(extras)
+                        lines.append(f"{qty}x {item_name} med ekstra {extras_str}")
+                else:
+                    lines.append(f"{qty}x ({variant}) {item_name}")
+
+    lines.append("\n=== Slut på Bestilling ===")
+    return "\n".join(lines)
+
 # --- Reset Quantities Flag ---
 if "reset_quantities" not in st.session_state:
     st.session_state.reset_quantities = False
@@ -382,7 +404,7 @@ with right_col:
                         st.success("Bestilling slettet!")
                         st.rerun()
 
-    # --- File Handling Section (moved here) ---
+    # --- File Handling Section ---
     st.divider()
     st.subheader("📥 Filhåndtering")
 
@@ -394,6 +416,15 @@ with right_col:
         mime="application/json"
     )
 
+    # --- NEW: Download Combined Orders as Text File ---
+    combined_text = format_combined_order_as_text(get_combined_order(orders))
+    st.download_button(
+        label="📥 Download kombineret bestilling (TXT)",
+        data=combined_text,
+        file_name="kombineret_bestilling.txt",
+        mime="text/plain"
+    )
+
     uploaded_file = st.file_uploader("Upload orders.json", type=["json"])
     if uploaded_file is not None:
         try:
@@ -402,7 +433,7 @@ with right_col:
             st.success("Bestillinger uploadet!")
             st.rerun()
         except Exception as e:
-            st.error(f"Fejl ved upload: {e}")        
+            st.error(f"Fejl ved upload: {e}")
 
     # --- Reset Orders ---
     st.divider()
