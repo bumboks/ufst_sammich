@@ -396,7 +396,7 @@ with right_col:
                 st.rerun()
             except Exception as e:
                 st.error(f"Fejl ved upload: {e}")
-    with col2:
+    #with col2:
         orders_json = json.dumps(orders, indent=2)
         st.download_button(
             label="📥 Download orders.json",
