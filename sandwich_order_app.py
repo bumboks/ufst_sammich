@@ -181,7 +181,6 @@ def format_combined_order_as_text(combined):
                 else:
                     lines.append(f"{qty}x ({variant}) {item_name}")
 
-    lines.append("\n=== Slut på Bestilling ===")
     return "\n".join(lines)
 
 # --- Reset Quantities Flag ---
@@ -408,21 +407,20 @@ with right_col:
     st.divider()
     st.subheader("📥 Filhåndtering")
 
+    combined_text = format_combined_order_as_text(get_combined_order(orders))
+    st.download_button(
+        label="📥 Download order.txt",
+        data=combined_text,
+        file_name="order.txt",
+        mime="text/plain"
+    )
+
     orders_json = json.dumps(orders, indent=2)
     st.download_button(
         label="📥 Download orders.json",
         data=orders_json,
         file_name="orders.json",
         mime="application/json"
-    )
-
-    # --- NEW: Download Combined Orders as Text File ---
-    combined_text = format_combined_order_as_text(get_combined_order(orders))
-    st.download_button(
-        label="📥 Download kombineret bestilling (TXT)",
-        data=combined_text,
-        file_name="kombineret_bestilling.txt",
-        mime="text/plain"
     )
 
     uploaded_file = st.file_uploader("Upload orders.json", type=["json"])
