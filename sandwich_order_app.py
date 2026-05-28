@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
 from zoneinfo import ZoneInfo
-from streamlit.components.v1 import html as components_html
 st.set_page_config(
     layout="wide",
     page_title="AI SLOP BY MADS",
@@ -335,157 +334,26 @@ with right_col:
         grand_total = sum(order.get("total", 0) for order in orders)
         st.metric("💰 Pris i alt (for alle bestillinger)", f"DKK {grand_total}")
 
-        # --- Combined Order Summary (sortable, printable) ---
+        # --- Combined Order Summary ---
         st.subheader("🗒️ Kombineret bestilling")
         combined = get_combined_order(orders)
-
-        # Build flat rows for display
-        rows = []
-                for item_name, variants in combined.items():
-                        for variant, qty in variants.items():
-                                if qty <= 0:
-                                        continue
-                                item_type = "sandwich" if item_name in SANDWICHES else "smørrebrød"
-                                display_variant = variant
-                                if item_type == "sandwich" and variant != "Intet ekstra":
-                                        extras = variant.split(", ")
-                                        display_variant = " + ".join(extras)
-                                rows.append({
-                                        "name": item_name,
-                                        "variant": display_variant,
-                                        "type": item_type,
-                                        "qty": qty,
-                                })
-
-                if not rows:
-                        st.info("Ingen varer i den kombinerede bestilling endnu.")
-                else:
-                        # Pre-sort server-side (default) by name asc
-                        rows_sorted = sorted(rows, key=lambda r: r["name"]) 
-
-                        # Build HTML for interactive, client-side sortable table
-                        html_rows = "".join(
-                                ["<tr><td>{name}</td><td>{variant}</td><td>{type}</td><td style='text-align:right'>{qty}</td></tr>".format(**r) for r in rows_sorted]
-                        )
-
-                        html_template = """
-                        <div>
-                            <style>
-                                .co-table {{ font-family: Arial, Helvetica, sans-serif; margin-top:8px; }}
-                                .co-table table {{ border-collapse: collapse; width: 100%; }}
-                                .co-table th, .co-table td {{ border: 1px solid #ddd; padding: 8px; }}
-                                .co-table th {{ background: #f4f4f4; cursor: pointer; user-select: none; }}
-                                .co-toolbar {{ margin-bottom:8px; }}
-                                .co-btn {{ margin-right:8px; padding:6px 10px; background:#007bff; color:white; border-radius:4px; border:none; cursor:pointer; }}
-                            </style>
-                            <div class='co-toolbar'>
-                                <button class='co-btn' onclick='openPrintView()'>Åben udskriftvisning</button>
-                            </div>
-                            <div class='co-table'>
-                                <table id='combinedTable'>
-                                    <thead><tr>
-                                        <th data-type='string'>Vare</th>
-                                        <th data-type='string'>Variant / Ekstra</th>
-                                        <th data-type='string'>Type</th>
-                                        <th data-type='number'>Antal</th>
-                                    </tr></thead>
-                                    <tbody>
-                                        {HTML_ROWS}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <script>
-                        function sortTable(table, colIndex, type, asc) {
-                            const tbody = table.tBodies[0];
-                            const rows = Array.from(tbody.querySelectorAll('tr'));
-                            rows.sort((a,b)=>{
-                                const aText = a.cells[colIndex].innerText.trim();
-                                const bText = b.cells[colIndex].innerText.trim();
-                                if(type === 'number'){
-                                    return (parseFloat(aText||0) - parseFloat(bText||0)) * (asc?1:-1);
-                                }
-                                return aText.localeCompare(bText) * (asc?1:-1);
-                            });
-                            rows.forEach(r=>tbody.appendChild(r));
-                        }
-
-                        (function(){
-                            const table = document.getElementById('combinedTable');
-                            const headers = table.querySelectorAll('th');
-                            headers.forEach((th, idx)=>{
-                                let asc = true;
-                                th.addEventListener('click', ()=>{
-                                    const type = th.getAttribute('data-type') || 'string';
-                                    sortTable(table, idx, type, asc);
-                                    asc = !asc;
-                                });
-                            });
-                        })();
-
-                        function openPrintView(){
-                            const table = document.getElementById('combinedTable');
-                            const newWin = window.open('', '_blank');
-                            const doc = newWin.document;
-                            const style = "body { font-family: Arial, Helvetica, sans-serif; padding:16px } table { border-collapse: collapse; width:100% } th,td { border:1px solid #ddd; padding:8px } th { background:#f4f4f4 } button { margin-bottom:12px }";
-                            doc.open();
-                            doc.write('<html><head><meta charset="utf-8"><title>Kombineret bestilling</title><style>' + style + '</style></head><body>');
-                            doc.write("<button onclick='window.print()'>Print</button>");
-                            doc.write(table.outerHTML);
-                            doc.write('</body></html>');
-                            doc.close();
-                        }
-                        </script>
-                        """
-
-                        html = html_template.replace('{HTML_ROWS}', html_rows)
-                        components_html(html, height=520)
-
-                        # Provide CSV and JSON downloads for the combined table (initial order)
-                        try:
-                                import io, csv
-                                csv_io = io.StringIO()
-                                writer = csv.writer(csv_io)
-                                writer.writerow(["name", "variant", "type", "qty"])
-                                for r in rows_sorted:
-                                        writer.writerow([r['name'], r['variant'], r['type'], r['qty']])
-                                csv_data = csv_io.getvalue()
-                                st.download_button("⬇️ Download kombineret CSV", data=csv_data, file_name="combined_orders.csv", mime="text/csv")
-                        except Exception:
-                                st.warning("Kunne ikke generere CSV for kombineret bestilling.")
+        for item_name, variants in combined.items():
+            for variant, qty in variants.items():
+                if qty > 0:
+                    if item_name in SANDWICHES:
+                        if variant == "Intet ekstra":
+                            st.write(f"{qty} {item_name}")
+                        else:
+                            extras = variant.split(", ")
+                            extras_str = " og ".join(extras)
+                            st.write(f"{qty} {item_name} med ekstra {extras_str}")
+                    else:
+                        st.write(f"{qty} ({variant}) {item_name}")
 
         st.divider()
 
         # --- Individual Orders ---
         st.subheader("📄 Individuelle bestillinger")
-
-        # Download raw orders.json + CSV summary of individual orders
-        try:
-            orders_json = json.dumps(orders, indent=2, ensure_ascii=False)
-            st.download_button("⬇️ Download rå orders.json", data=orders_json, file_name="orders.json", mime="application/json")
-
-            # Build CSV summary for individual orders
-            try:
-                import io, csv
-                csv_io2 = io.StringIO()
-                writer2 = csv.writer(csv_io2)
-                writer2.writerow(["name", "timestamp", "total", "items"])
-                for o in orders:
-                    items_desc = []
-                    for it in o.get('items', []):
-                        if it.get('type') == 'sandwich':
-                            variant = it.get('extra', 'Intet ekstra')
-                        else:
-                            variant = it.get('size', '')
-                        items_desc.append(f"{it.get('qty',0)} x {it.get('name','Unknown')} ({variant})")
-                    writer2.writerow([o.get('name',''), o.get('timestamp',''), o.get('total',0), '; '.join(items_desc)])
-                orders_csv = csv_io2.getvalue()
-                st.download_button("⬇️ Download individuelle bestillinger CSV", data=orders_csv, file_name="individual_orders.csv", mime="text/csv")
-            except Exception:
-                st.warning("Kunne ikke generere CSV for individuelle bestillinger.")
-        except Exception:
-            st.warning("Kunne ikke generere download for orders.json.")
         for i, order in enumerate(reversed(orders), 1):
             original_index = len(orders) - i
             with st.expander(
