@@ -335,8 +335,11 @@ with right_col:
         # --- Combined Order Summary ---
         st.subheader("🗒️ Kombineret bestilling")
         combined = get_combined_order(orders)
-        for item_name, variants in combined.items():
-            for variant, qty in variants.items():
+
+        # Sort items alphabetically by name
+        for item_name in sorted(combined.keys()):
+            for variant in sorted(combined[item_name].keys()):
+                qty = combined[item_name][variant]
                 if qty > 0:
                     if item_name in SANDWICHES:
                         if variant == "Intet ekstra":
