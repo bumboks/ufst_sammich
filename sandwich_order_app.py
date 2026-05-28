@@ -341,21 +341,21 @@ with right_col:
 
         # Build flat rows for display
         rows = []
-        for item_name, variants in combined.items():
-            for variant, qty in variants.items():
-                if qty <= 0:
-                    continue
-                item_type = "sandwich" if item_name in SANDWICHES else "smørrebrød"
-                display_variant = variant
-                if item_type == "sandwich" and variant != "Intet ekstra":
-                    extras = variant.split(", ")
-                    display_variant = " + ".join(extras)
-                rows.append({
-                    "name": item_name,
-                    "variant": display_variant,
-                    "type": item_type,
-                    "qty": qty,
-                })
+                for item_name, variants in combined.items():
+                        for variant, qty in variants.items():
+                                if qty <= 0:
+                                        continue
+                                item_type = "sandwich" if item_name in SANDWICHES else "smørrebrød"
+                                display_variant = variant
+                                if item_type == "sandwich" and variant != "Intet ekstra":
+                                        extras = variant.split(", ")
+                                        display_variant = " + ".join(extras)
+                                rows.append({
+                                        "name": item_name,
+                                        "variant": display_variant,
+                                        "type": item_type,
+                                        "qty": qty,
+                                })
 
                 if not rows:
                         st.info("Ingen varer i den kombinerede bestilling endnu.")
@@ -365,10 +365,10 @@ with right_col:
 
                         # Build HTML for interactive, client-side sortable table
                         html_rows = "".join(
-                                f"<tr><td>{r['name']}</td><td>{r['variant']}</td><td>{r['type']}</td><td style='text-align:right'>{r['qty']}</td></tr>" for r in rows_sorted
+                                ["<tr><td>{name}</td><td>{variant}</td><td>{type}</td><td style='text-align:right'>{qty}</td></tr>".format(**r) for r in rows_sorted]
                         )
 
-                        html = f"""
+                        html_template = """
                         <div>
                             <style>
                                 .co-table {{ font-family: Arial, Helvetica, sans-serif; margin-top:8px; }}
@@ -390,7 +390,7 @@ with right_col:
                                         <th data-type='number'>Antal</th>
                                     </tr></thead>
                                     <tbody>
-                                        {html_rows}
+                                        {HTML_ROWS}
                                     </tbody>
                                 </table>
                             </div>
@@ -428,9 +428,9 @@ with right_col:
                             const table = document.getElementById('combinedTable');
                             const newWin = window.open('', '_blank');
                             const doc = newWin.document;
-                            const style = `body { font-family: Arial, Helvetica, sans-serif; padding:16px } table { border-collapse: collapse; width:100% } th,td { border:1px solid #ddd; padding:8px } th { background:#f4f4f4 } button { margin-bottom:12px }`;
+                            const style = "body { font-family: Arial, Helvetica, sans-serif; padding:16px } table { border-collapse: collapse; width:100% } th,td { border:1px solid #ddd; padding:8px } th { background:#f4f4f4 } button { margin-bottom:12px }";
                             doc.open();
-                            doc.write(`<html><head><meta charset='utf-8'><title>Kombineret bestilling</title><style>${style}</style></head><body>`);
+                            doc.write('<html><head><meta charset="utf-8"><title>Kombineret bestilling</title><style>' + style + '</style></head><body>');
                             doc.write("<button onclick='window.print()'>Print</button>");
                             doc.write(table.outerHTML);
                             doc.write('</body></html>');
@@ -439,6 +439,7 @@ with right_col:
                         </script>
                         """
 
+                        html = html_template.replace('{HTML_ROWS}', html_rows)
                         components_html(html, height=520)
 
                         # Provide CSV and JSON downloads for the combined table (initial order)
