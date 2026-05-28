@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
 from zoneinfo import ZoneInfo
+from streamlit.components.v1 import html as components_html
 st.set_page_config(
     layout="wide",
     page_title="AI SLOP BY MADS",
@@ -334,26 +335,82 @@ with right_col:
         grand_total = sum(order.get("total", 0) for order in orders)
         st.metric("💰 Pris i alt (for alle bestillinger)", f"DKK {grand_total}")
 
-        # --- Combined Order Summary ---
+        # --- Combined Order Summary (sortable, printable) ---
         st.subheader("🗒️ Kombineret bestilling")
         combined = get_combined_order(orders)
+
+        # Build flat rows for display
+        rows = []
         for item_name, variants in combined.items():
             for variant, qty in variants.items():
-                if qty > 0:
-                    if item_name in SANDWICHES:
-                        if variant == "Intet ekstra":
-                            st.write(f"{qty} {item_name}")
-                        else:
-                            extras = variant.split(", ")
-                            extras_str = " og ".join(extras)
-                            st.write(f"{qty} {item_name} med ekstra {extras_str}")
-                    else:
-                        st.write(f"{qty} ({variant}) {item_name}")
+                if qty <= 0:
+                    continue
+                item_type = "sandwich" if item_name in SANDWICHES else "smørrebrød"
+                display_variant = variant
+                if item_type == "sandwich" and variant != "Intet ekstra":
+                    extras = variant.split(", ")
+                    display_variant = " + ".join(extras)
+                rows.append({
+                    "name": item_name,
+                    "variant": display_variant,
+                    "type": item_type,
+                    "qty": qty,
+                })
+
+        if not rows:
+            st.info("Ingen varer i den kombinerede bestilling endnu.")
+        else:
+            # Sorting controls
+            sort_col = st.selectbox("Sorter efter:", ["name", "variant", "type", "qty"], index=0, key="sort_col")
+            sort_dir = st.radio("Rækkefølge:", ["Stigende", "Faldende"], horizontal=True, key="sort_dir")
+            reverse = sort_dir == "Faldende"
+            rows_sorted = sorted(rows, key=lambda r: (r[sort_col] if sort_col != "qty" else int(r["qty"])), reverse=reverse)
+
+            # Display as table
+            st.table(rows_sorted)
+
+            # Printable HTML view
+            if st.button("Åben udskriftvisning"):
+                # Build simple HTML table for printing
+                html_rows = "".join(
+                    f"<tr><td>{r['name']}</td><td>{r['variant']}</td><td>{r['type']}</td><td style='text-align:right'>{r['qty']}</td></tr>" for r in rows_sorted
+                )
+                html = f"""
+                <html>
+                <head>
+                <meta charset='utf-8'>
+                <style>
+                  body {{ font-family: Arial, Helvetica, sans-serif; padding: 16px; }}
+                  table {{ border-collapse: collapse; width: 100%; }}
+                  th, td {{ border: 1px solid #ddd; padding: 8px; }}
+                  th {{ background: #f4f4f4; text-align: left; }}
+                </style>
+                </head>
+                <body>
+                <h2>Kombineret bestilling (print)</h2>
+                <button onclick='window.print()'>Print</button>
+                <table>
+                  <thead><tr><th>Vare</th><th>Variant / Ekstra</th><th>Type</th><th>Antal</th></tr></thead>
+                  <tbody>
+                  {html_rows}
+                  </tbody>
+                </table>
+                </body>
+                </html>
+                """
+                components_html(html, height=600)
 
         st.divider()
 
         # --- Individual Orders ---
         st.subheader("📄 Individuelle bestillinger")
+
+        # Download raw orders.json
+        try:
+            orders_json = json.dumps(orders, indent=2, ensure_ascii=False)
+            st.download_button("⬇️ Download rå orders.json", data=orders_json, file_name="orders.json", mime="application/json")
+        except Exception:
+            st.warning("Kunne ikke generere download for orders.json.")
         for i, order in enumerate(reversed(orders), 1):
             original_index = len(orders) - i
             with st.expander(
