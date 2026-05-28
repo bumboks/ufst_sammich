@@ -419,7 +419,7 @@ with right_col:
     with col2:
         orders_json = json.dumps(orders, indent=2)
         st.download_button(
-            label="📥 backup orders.json",
+            label="📥 orders.json",
             data=orders_json,
             file_name="orders.json",
             mime="application/json"
