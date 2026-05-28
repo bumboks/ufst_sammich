@@ -410,7 +410,7 @@ with right_col:
     with col1:
         combined_text = format_combined_order_as_text(get_combined_order(orders))
         st.download_button(
-            label="📥 orders.txt",
+            label="📥 copy of orders.txt",
             data=combined_text,
             file_name="orders.txt",
             mime="text/plain"
@@ -419,7 +419,7 @@ with right_col:
     with col2:
         orders_json = json.dumps(orders, indent=2)
         st.download_button(
-            label="📥 orders.json",
+            label="📥 backup orders.json",
             data=orders_json,
             file_name="orders.json",
             mime="application/json"
