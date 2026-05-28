@@ -410,7 +410,7 @@ with right_col:
     with col1:
         combined_text = format_combined_order_as_text(get_combined_order(orders))
         st.download_button(
-            label="📥 copy of orders.txt",
+            label="📥 orders.txt",
             data=combined_text,
             file_name="orders.txt",
             mime="text/plain"
