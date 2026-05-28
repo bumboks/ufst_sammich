@@ -385,25 +385,24 @@ with right_col:
     # --- File Handling Section (moved here) ---
     st.divider()
     st.subheader("📥 Filhåndtering")
-    col1, col2 = st.columns(2)
-    with col1:
-        orders_json = json.dumps(orders, indent=2)
-        st.download_button(
-            label="📥 Download orders.json",
-            data=orders_json,
-            file_name="orders.json",
-            mime="application/json"
-        )
 
-        uploaded_file = st.file_uploader("Upload orders.json", type=["json"])
-        if uploaded_file is not None:
-            try:
-                new_orders = json.loads(uploaded_file.getvalue().decode("utf-8"))
-                save_orders(new_orders)
-                st.success("Bestillinger uploadet!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Fejl ved upload: {e}")        
+    orders_json = json.dumps(orders, indent=2)
+    st.download_button(
+        label="📥 Download orders.json",
+        data=orders_json,
+        file_name="orders.json",
+        mime="application/json"
+    )
+
+    uploaded_file = st.file_uploader("Upload orders.json", type=["json"])
+    if uploaded_file is not None:
+        try:
+            new_orders = json.loads(uploaded_file.getvalue().decode("utf-8"))
+            save_orders(new_orders)
+            st.success("Bestillinger uploadet!")
+            st.rerun()
+        except Exception as e:
+            st.error(f"Fejl ved upload: {e}")        
 
     # --- Reset Orders ---
     st.divider()
