@@ -357,58 +357,132 @@ with right_col:
                     "qty": qty,
                 })
 
-        if not rows:
-            st.info("Ingen varer i den kombinerede bestilling endnu.")
-        else:
-            # Sorting controls
-            sort_col = st.selectbox("Sorter efter:", ["name", "variant", "type", "qty"], index=0, key="sort_col")
-            sort_dir = st.radio("Rækkefølge:", ["Stigende", "Faldende"], horizontal=True, key="sort_dir")
-            reverse = sort_dir == "Faldende"
-            rows_sorted = sorted(rows, key=lambda r: (r[sort_col] if sort_col != "qty" else int(r["qty"])), reverse=reverse)
+                if not rows:
+                        st.info("Ingen varer i den kombinerede bestilling endnu.")
+                else:
+                        # Pre-sort server-side (default) by name asc
+                        rows_sorted = sorted(rows, key=lambda r: r["name"]) 
 
-            # Display as table
-            st.table(rows_sorted)
+                        # Build HTML for interactive, client-side sortable table
+                        html_rows = "".join(
+                                f"<tr><td>{r['name']}</td><td>{r['variant']}</td><td>{r['type']}</td><td style='text-align:right'>{r['qty']}</td></tr>" for r in rows_sorted
+                        )
 
-            # Printable HTML view
-            if st.button("Åben udskriftvisning"):
-                # Build simple HTML table for printing
-                html_rows = "".join(
-                    f"<tr><td>{r['name']}</td><td>{r['variant']}</td><td>{r['type']}</td><td style='text-align:right'>{r['qty']}</td></tr>" for r in rows_sorted
-                )
-                html = f"""
-                <html>
-                <head>
-                <meta charset='utf-8'>
-                <style>
-                  body {{ font-family: Arial, Helvetica, sans-serif; padding: 16px; }}
-                  table {{ border-collapse: collapse; width: 100%; }}
-                  th, td {{ border: 1px solid #ddd; padding: 8px; }}
-                  th {{ background: #f4f4f4; text-align: left; }}
-                </style>
-                </head>
-                <body>
-                <h2>Kombineret bestilling (print)</h2>
-                <button onclick='window.print()'>Print</button>
-                <table>
-                  <thead><tr><th>Vare</th><th>Variant / Ekstra</th><th>Type</th><th>Antal</th></tr></thead>
-                  <tbody>
-                  {html_rows}
-                  </tbody>
-                </table>
-                </body>
-                </html>
-                """
-                components_html(html, height=600)
+                        html = f"""
+                        <div>
+                            <style>
+                                .co-table {{ font-family: Arial, Helvetica, sans-serif; margin-top:8px; }}
+                                .co-table table {{ border-collapse: collapse; width: 100%; }}
+                                .co-table th, .co-table td {{ border: 1px solid #ddd; padding: 8px; }}
+                                .co-table th {{ background: #f4f4f4; cursor: pointer; user-select: none; }}
+                                .co-toolbar {{ margin-bottom:8px; }}
+                                .co-btn {{ margin-right:8px; padding:6px 10px; background:#007bff; color:white; border-radius:4px; border:none; cursor:pointer; }}
+                            </style>
+                            <div class='co-toolbar'>
+                                <button class='co-btn' onclick='openPrintView()'>Åben udskriftvisning</button>
+                            </div>
+                            <div class='co-table'>
+                                <table id='combinedTable'>
+                                    <thead><tr>
+                                        <th data-type='string'>Vare</th>
+                                        <th data-type='string'>Variant / Ekstra</th>
+                                        <th data-type='string'>Type</th>
+                                        <th data-type='number'>Antal</th>
+                                    </tr></thead>
+                                    <tbody>
+                                        {html_rows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <script>
+                        function sortTable(table, colIndex, type, asc) {
+                            const tbody = table.tBodies[0];
+                            const rows = Array.from(tbody.querySelectorAll('tr'));
+                            rows.sort((a,b)=>{
+                                const aText = a.cells[colIndex].innerText.trim();
+                                const bText = b.cells[colIndex].innerText.trim();
+                                if(type === 'number'){
+                                    return (parseFloat(aText||0) - parseFloat(bText||0)) * (asc?1:-1);
+                                }
+                                return aText.localeCompare(bText) * (asc?1:-1);
+                            });
+                            rows.forEach(r=>tbody.appendChild(r));
+                        }
+
+                        (function(){
+                            const table = document.getElementById('combinedTable');
+                            const headers = table.querySelectorAll('th');
+                            headers.forEach((th, idx)=>{
+                                let asc = true;
+                                th.addEventListener('click', ()=>{
+                                    const type = th.getAttribute('data-type') || 'string';
+                                    sortTable(table, idx, type, asc);
+                                    asc = !asc;
+                                });
+                            });
+                        })();
+
+                        function openPrintView(){
+                            const table = document.getElementById('combinedTable');
+                            const newWin = window.open('', '_blank');
+                            const doc = newWin.document;
+                            const style = `body { font-family: Arial, Helvetica, sans-serif; padding:16px } table { border-collapse: collapse; width:100% } th,td { border:1px solid #ddd; padding:8px } th { background:#f4f4f4 } button { margin-bottom:12px }`;
+                            doc.open();
+                            doc.write(`<html><head><meta charset='utf-8'><title>Kombineret bestilling</title><style>${style}</style></head><body>`);
+                            doc.write("<button onclick='window.print()'>Print</button>");
+                            doc.write(table.outerHTML);
+                            doc.write('</body></html>');
+                            doc.close();
+                        }
+                        </script>
+                        """
+
+                        components_html(html, height=520)
+
+                        # Provide CSV and JSON downloads for the combined table (initial order)
+                        try:
+                                import io, csv
+                                csv_io = io.StringIO()
+                                writer = csv.writer(csv_io)
+                                writer.writerow(["name", "variant", "type", "qty"])
+                                for r in rows_sorted:
+                                        writer.writerow([r['name'], r['variant'], r['type'], r['qty']])
+                                csv_data = csv_io.getvalue()
+                                st.download_button("⬇️ Download kombineret CSV", data=csv_data, file_name="combined_orders.csv", mime="text/csv")
+                        except Exception:
+                                st.warning("Kunne ikke generere CSV for kombineret bestilling.")
 
         st.divider()
 
         # --- Individual Orders ---
         st.subheader("📄 Individuelle bestillinger")
 
-        # Download raw orders.json
+        # Download raw orders.json + CSV summary of individual orders
         try:
             orders_json = json.dumps(orders, indent=2, ensure_ascii=False)
             st.download_button("⬇️ Download rå orders.json", data=orders_json, file_name="orders.json", mime="application/json")
+
+            # Build CSV summary for individual orders
+            try:
+                import io, csv
+                csv_io2 = io.StringIO()
+                writer2 = csv.writer(csv_io2)
+                writer2.writerow(["name", "timestamp", "total", "items"])
+                for o in orders:
+                    items_desc = []
+                    for it in o.get('items', []):
+                        if it.get('type') == 'sandwich':
+                            variant = it.get('extra', 'Intet ekstra')
+                        else:
+                            variant = it.get('size', '')
+                        items_desc.append(f"{it.get('qty',0)} x {it.get('name','Unknown')} ({variant})")
+                    writer2.writerow([o.get('name',''), o.get('timestamp',''), o.get('total',0), '; '.join(items_desc)])
+                orders_csv = csv_io2.getvalue()
+                st.download_button("⬇️ Download individuelle bestillinger CSV", data=orders_csv, file_name="individual_orders.csv", mime="text/csv")
+            except Exception:
+                st.warning("Kunne ikke generere CSV for individuelle bestillinger.")
         except Exception:
             st.warning("Kunne ikke generere download for orders.json.")
         for i, order in enumerate(reversed(orders), 1):
